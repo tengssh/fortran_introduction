@@ -39,6 +39,7 @@
       print *, f, kind(f)
     end program variable
     ```
+
 - Read variables
   ```fortran
   program read
@@ -53,20 +54,20 @@
   ```
 
 - Floating-point precision
-```fortran
-program float
-  use, intrinsic :: iso_fortran_env, only: sp=>real32, dp=>real64
-  implicit none
-  real(sp) :: f32
-  real(dp) :: f64
+  ```fortran
+  program float
+    use, intrinsic :: iso_fortran_env, only: sp=>real32, dp=>real64
+    implicit none
+    real(sp) :: f32
+    real(dp) :: f64
 
-  f32 = 1.0_sp
-  f64 = 1.0_dp
-  
-  print *, f32, kind(f32)
-  print *, f64, kind(f64)
-end program float
-```
+    f32 = 1.0_sp
+    f64 = 1.0_dp
+
+    print *, f32, kind(f32)
+    print *, f64, kind(f64)
+  end program float
+  ```
 
 ## Variables
 - `#define PI 3.141592`
