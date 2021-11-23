@@ -42,7 +42,7 @@
 
 - Read variables
   ```fortran
-  program read
+  program read_var
     implicit none
     integer :: val
 
@@ -50,7 +50,7 @@
     read(*,*) val
 
     print *, val
-  end program read
+  end program read_var
   ```
 
 - Floating-point precision
