@@ -7,7 +7,7 @@
     print *, 'Hello, world!'
   end program program_name
   ```
-- compile
+- Compile
   - `gfortran hello_world.f90 -o hello_world`
   - https://gcc.gnu.org/fortran/
 - [rules](https://www.ibm.com/docs/en/xl-fortran-aix/16.1.0?topic=fundamentals-names) for `program_name`
@@ -15,6 +15,14 @@
   - Digits (0-9)
   - Underscores (_)
   - The first character of a name must not be a digit. In Fortran 2003, the maximum length of a name is 63 characters. In Fortran 90 and Fortran 95, the maximum length of a name is 31 characters.
+- Subroutine
+  ```fortran
+  subroutine sub_program (var_name)      
+    implicit none
+    integer :: var_name
+  end subroutine sub_program
+  ```
+  - `call sub_program (var_name)`
 
 ## Data types
 - There are 5 intrinsic data types: `integer`, `real`, `complex`, `logical`, `character`
@@ -89,6 +97,38 @@
     t = 3.0623822
     print *, g*t**2/2 
   end program free_falling
+  ```
+
+## Array
+- Definition
+  - `integer, dimension(3) :: array`
+  - `integer :: array(3)`
+  - `real, dimension(10, 10) :: array2d`
+  - custom index: `real :: array4(0:6)`, `real :: array5(-3:3)`
+- Static array
+  ```fortran
+  program arrays
+    implicit none
+
+    integer :: i, j
+    integer :: array1(10), array2(5)
+    integer :: array3(3, 3)
+
+    array1 = (/1, 2, 3, 4, 5, 6, 7, 8, 9, 10 /) ! array constructor
+    array1 = (/(i, i = 1, 10)/) ! do loop constructor
+    array2(:) = 0
+    array2(3:5) = 1
+    do i = 1,3
+        do j = 1,3
+           array3(i, j) = i+j
+        end do
+     end do
+
+    print *, array1(1:10:2) ! even index
+      print *, array2(5:1:-1) ! reverse
+      print *, array3(:,1) ! column 1
+
+    end program arrays
   ```
 
 ## Operators and flow control
