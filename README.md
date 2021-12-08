@@ -99,12 +99,13 @@
   end program free_falling
   ```
 
-## Array
+## Array 
 - Definition
   - `integer, dimension(3) :: array`
   - `integer :: array(3)`
   - `real, dimension(10, 10) :: array2d`
   - custom index: `real :: array4(0:6)`, `real :: array5(-3:3)`
+  - `integer, allocatable :: array6(:)` (see **Dynamic array**)
 - Static array
   ```fortran
   program arrays
@@ -125,11 +126,70 @@
      end do
 
     print *, array1(1:10:2) ! even index
-      print *, array2(5:1:-1) ! reverse
-      print *, array3(:,1) ! column 1
+    print *, array2(5:1:-1) ! reverse
+    print *, array3(:,1) ! column 1
 
-    end program arrays
+  end program arrays
   ```
+- Dynamic array
+  ```fortran
+  program dynamic_array
+    implicit none
+    integer :: val
+    integer, allocatable :: array1(:)
+
+    print *, 'Please enter an integer: '
+    read(*,*) val
+    print *, "Initiate a 1D array of ", val, " elements and set all to 1."
+
+    allocate(array1(val))
+    array1 = 1
+    print *, array1
+    deallocate(array1)
+
+  end program dynamic_array  
+  ```
+
+## String
+- Definition
+  - `character(len = 10) :: string1`
+  - `character(:), allocatable :: string2` (see **Dynamic string**)
+- Static string
+  ```fortran
+  program string
+  implicit none
+
+     character(len = 10) :: ind
+     character(len = 1) :: a, d 
+     character(len = 6) :: b
+     character(len = 2) :: c
+
+     ind = '1234567890'
+     a = 'ab'
+     b = 'cde'
+     c = ' f'
+     d = '.'
+
+     print *, ind
+     print *, ind(3:5)  ! substring
+     print *, a, b, c, d
+     ind = a//b//c//d   ! string concatenation
+     print *, ind
+     print *, a, trim(b), c, d   ! trim trailing blanks
+     print *, a, adjustr(b), adjustl(c), d   ! adjust string to the right/left
+
+     ! search substring in a string
+     d = 'd'
+     if( index(b, d) == 0 ) then
+        print *, 'Not found!'
+     else
+        print *, 'Found at index: ', index(b, d)
+     end if
+
+  end program string
+  ```
+- Dynamic string
+  - The length of allocatable string can be varied during the program runtime. (see [ref.](https://fortranwiki.org/fortran/files/character_handling_in_Fortran.html))
 
 ## Operators and flow control
 - arithmetic Operators
