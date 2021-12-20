@@ -19,9 +19,10 @@
   ```fortran
   subroutine sub_program (var_name)      
     implicit none
-    integer :: var_name
+    integer, intent(in) :: var_name
   end subroutine sub_program
   ```
+  - `intent(in)`: write-only, `intent(out)`: read-only, `intent(inout)`: read-write
   - `call sub_program (var_name)`
 
 ## Data types
