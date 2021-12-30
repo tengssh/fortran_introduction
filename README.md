@@ -15,15 +15,87 @@
   - Digits (0-9)
   - Underscores (_)
   - The first character of a name must not be a digit. In Fortran 2003, the maximum length of a name is 63 characters. In Fortran 90 and Fortran 95, the maximum length of a name is 31 characters.
-- Subroutine
-  ```fortran
-  subroutine sub_program (var_name)      
-    implicit none
-    integer, intent(in) :: var_name
-  end subroutine sub_program
-  ```
+- [Fortran keywords](https://www.tutorialspoint.com/fortran/fortran_basic_syntax.htm)
+  - These keywords cannot be used as names.
+- Subroutines, Functions & Modules
+  - `m.f90`
+    ```fortran
+    module m
+      implicit none
+
+      private   ! specify that all entities are private
+      public pi, identity_matrix, volume   ! explicitly declare public entities
+
+      real, parameter :: pi = 3.141593
+      integer :: n = 1
+
+    contains
+
+      ! identity matrix M
+      subroutine identity_matrix(M, d)
+        real, intent(inout) :: M(:,:)   ! arbitrary matrix dimensions
+        integer :: d
+        integer :: i, j
+
+        do i = 1, size(M,1)
+          do j = 1, size(M,2)
+            if ( i==j ) then
+              M(i,j) = 1
+            else
+              M(i,j) = 0
+            end if
+          end do
+        end do
+        do i = 1, d
+          print *, M(i,:d)
+        end do
+
+      end subroutine identity_matrix
+
+      ! volume of cylinder
+      elemental function volume(radius,height) result(vol)
+        real, intent(in) :: radius, height
+        real :: vol
+
+        vol = pi*radius**2*height
+
+      end function volume
+
+    end module m
+    ```
+  - `main.f90`
+    ```fortran
+    program use_mod
+      use m, only: pi, vol=>volume, im=>identity_matrix
+      implicit none
+
+      real :: M(3,3)
+      integer :: d = 3
+
+      print *, 'public variable pi = ', pi
+
+      print *, 'identity matrix'
+      ! call subroutine
+      call im(M, d)
+
+      print *, 'volume'
+      ! modified from this post (https://github.com/tengssh/fortran_introduction/issues/1)
+      ! demonstrate positional and named arguments
+      print *, vol(1.0, 10.0)
+      print *, vol(radius=1.0, height=10.0)
+      print *, vol(1.0,height=10.0)
+      print *, vol(height=10.0,radius=2.0)
+      ! call elemental function with array input
+      print *, vol([1.0, 2.0], 100.0)
+
+    end program use_mod
+    ```
+  - Compile: `gfortran m.f90 main.f90 -o use_mod`, then `*.mod` will be generated.
   - `intent(in)`: write-only, `intent(out)`: read-only, `intent(inout)`: read-write
-  - `call sub_program (var_name)`
+  - `call subroutine(var_name)`, `function(var_name)`
+  - It is beneficial to always put functions and subroutines in the modules (see this [post](https://stackoverflow.com/questions/11953087/proper-use-of-modules-in-fortran))
+  - Miscellaneous
+    - [Elemental functions](https://fortranwiki.org/fortran/show/elemental)
 
 ## Data types
 - There are 5 intrinsic data types: `integer`, `real`, `complex`, `logical`, `character`
@@ -31,9 +103,9 @@
   - **`variable_type :: variable_name`**
     ```fortran
     program variable
-    implicit none ! This statement turns off implicit typing (good practice in programming).
+    implicit none   !This statement turns off implicit typing (good practice in programming).
       integer :: a
-      integer(kind = 2) :: b ! n = 2, 4(default), 8, 16
+      integer(kind = 2) :: b   !number of bytes = 2, 4(default), 8, 16
       real :: c
       complex :: d
       character(len=30) :: e
@@ -42,13 +114,13 @@
       b=1
       c=0.1
       d=(0.1, -0.1)
-      e='string' ! e(1:3) is 'str'
+      e='string'   !e(1:3) is 'str'
       f=.true.
-      print *, huge(a), kind(a)
+      print *, huge(a), kind(a)   !huge() gives the largest number of the specified data type
       print *, huge(b), kind(b)
       print *, c, kind(c)
       print *, d, kind(d)
-      print *, cmplx(a,b)
+      print *, cmplx(a,b)   !complex number
       print *, e, kind(e)
       print *, f, kind(f)
     end program variable
@@ -190,7 +262,7 @@
   end program string
   ```
 - Dynamic string
-  - The length of allocatable string can be varied during the program runtime. (see [ref.](https://fortranwiki.org/fortran/files/character_handling_in_Fortran.html))
+  - The length of allocatable string can be varied during the program runtime. (refer to [fortran wiki](https://fortranwiki.org/fortran/files/character_handling_in_Fortran.html))
 
 ## Operators and flow control
 - arithmetic Operators
