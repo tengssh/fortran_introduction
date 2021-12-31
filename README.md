@@ -264,10 +264,143 @@
 - Dynamic string
   - The length of allocatable string can be varied during the program runtime. (refer to [fortran wiki](https://fortranwiki.org/fortran/files/character_handling_in_Fortran.html))
 
+## Dervied types
+- Syntax
+  ```fortran
+  type [,attribute-list] :: name [(parameterized-declaration-list)]
+    [parameterized-definition-statements]
+    [private statement or sequence statement]
+    [member-variables]
+  contains
+    [type-bound-procedures]
+  end type
+  ```
+  - `attribute-list`: `public`, `private`, `bind(c)` (used for C compatibility), `extends(parent)` (inheritance), `abstract` (OOP)
+  - `(parameterized-declaration-list)`: not all compilers implement this feature (refer to the answer of this [post](https://stackoverflow.com/questions/13889326/fortran-type-definition-with-a-parameter-list))
+  - `sequence`: the following member-varaibles are stored contiguously as defined
+  - Please check this [page](https://fortran-lang.org/learn/quickstart/derived_types) for more details.
+- Inheritance
+  - `m_particle.f90`
+    ```fortran
+    module m_particle
+      implicit none
+      private
+      public t_particle, t_fermion, t_boson, t_electron, t_photon
+
+      type :: t_particle
+        character(len=:), allocatable :: name
+        real :: charge
+        real :: mass
+        real, dimension(3) :: position
+      end type
+
+      type :: t_fermion
+        type(t_particle) :: particle
+        real :: spin
+      end type
+
+      type :: t_boson
+        type(t_particle) :: particle
+        integer :: spin
+      end type
+
+      type, extends(t_fermion) :: t_electron
+          character(len=:), allocatable :: statistics
+      end type
+
+      type, extends(t_boson)  :: t_photon
+        character(len=:), allocatable :: statistics
+      end type
+
+    end module m_particle
+    ```
+  - `particle.f90`
+    ```fortran
+    program particle
+      use m_particle
+      implicit none
+      type(t_electron) :: e
+      type(t_photon) :: c
+
+      e%particle%name = 'electron'
+      e%particle%charge = 1.6e-19
+      e%particle%mass = 9.1e-31
+      e%particle%position = (/0, 0, 0 /)
+      e%spin = 0.5
+      e%statistics = 'Fermi-Dirac'
+
+      c%particle%name = 'photon'
+      c%particle%position = (/1, 0, 1 /)
+      c%spin = 1
+      c%statistics = 'Bose-Einstein'
+
+      print *, e%particle%name, e%spin, e%particle%position, e%particle%mass, e%particle%charge
+      print *, c%particle%name, c%spin, c%particle%position
+
+    end program particle
+    ```
+- Type-bound procedures
+  - `m_procedure.f90`
+    ```fortran
+    module m_procedure
+      implicit none
+      private
+      public t_calculator
+
+      type :: t_calculator
+        integer :: n = 0
+      contains
+        procedure :: fsum, sfact
+      end type
+
+    contains
+
+      ! Type-bound function
+      integer function fsum(self) result(res)
+        class(t_calculator), intent(in) :: self
+        integer :: i
+        res = 0
+        do i = 1, self%n
+          res = res + i
+        end do
+      end function
+
+      ! Type-bound subroutine
+      subroutine sfact(self, res)
+        class(t_calculator), intent(in) :: self
+        integer, intent(out) :: res
+        integer :: i
+        res = 1
+        do i = 1, self%n
+          res = res*i
+        end do
+      end subroutine
+    end module m_procedure
+    ```
+  - `main.f90`
+    ```fortran
+    program main
+      use m_procedure
+      implicit none
+
+      type(t_calculator) :: cal
+      integer :: m, ans
+
+      m = 6
+      cal%n = m
+
+      ans = cal%fsum()
+      print *, "summation", m, ans
+      call cal%sfact(ans)
+      print *, "factorial", m, ans
+    end program main
+    ```
+  - `class` can be used to create polymorphic variables for OOP. (see this [article](https://www.pgroup.com/blogs/posts/f03-oop-part2.htm))
+
 ## Operators and flow control
-- arithmetic Operators
-- relational Operators
-- logical Operators (`.and.`, `.or.`, `.not.`, `.eqv.`, `.neqv.`)
+- arithmetic operators
+- relational operators
+- logical operators (`.and.`, `.or.`, `.not.`, `.eqv.`, `.neqv.`)
 - **if-else construct**
   ```fortran
   program ifelse
